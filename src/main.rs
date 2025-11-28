@@ -1,6 +1,10 @@
 #![no_main]
 #![no_std]
 
+extern crate alloc;
+
+use alloc::vec::Vec;
+
 
 #[cfg(not(test))]
 use core::panic::PanicInfo;
@@ -49,6 +53,31 @@ fn main() -> Status {
 
         return Status::ABORTED;
     };
+
+    // 在获取gop后，尝试设置1280x800模式
+    let size = gop.frame_buffer().size();
+    let modes = gop.modes();
+for (i, mode) in modes.enumerate() {
+    let info = mode.info();
+    println!(
+        "Mode {}: {}x{}  format: {:?}  fb_size: {}",
+        i,
+        info.resolution().0,
+        info.resolution().1,
+        info.pixel_format(),
+        size
+    );
+}
+ let target_mode = gop.modes()
+        .find(|mode| {
+            let info = mode.info();
+            let (w, h) = info.resolution();
+            w == 1280 && h >= 800   // 或者你想要的精确值，比如 h == 1024
+        })
+        .expect("No suitable graphics mode found");
+
+    gop.set_mode(&target_mode)
+        .expect("Failed to set graphics mode");
 
     unsafe {
         core::ptr::copy_nonoverlapping(GENERATED_DATA as *const u8, gop.frame_buffer().as_mut_ptr(), GENERATED_DATA.len());

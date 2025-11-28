@@ -40,12 +40,13 @@ fn main() {
         }
 
     }
+
     result.extend(vec![0; 1280 * 1024 * 4 - result.len()]);
 
     // 将数据格式化为 Rust 代码
     let content = format!(
-        "pub static GENERATED_DATA: &'static [u8; 1280 * 1024 * 4] = &{:?};\n",
-        &result[..1280 * 1024 * 4]
+        "pub static GENERATED_DATA: &'static [u8; 1280 * 900 * 4] = &{:?};\n",
+        &result[1280 * 100 * 4..1280 * 1000 * 4]
     );
 
     // 写入文件
