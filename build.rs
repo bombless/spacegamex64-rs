@@ -14,11 +14,8 @@ fn main() {
     for line in content.lines() {
 
         // 提取 "db " 之后的内容
-        let after_db = if let Some(stripped) = line.strip_prefix("db ") {
-            stripped
-        } else {
-            continue; // 如果没有 "db " 前缀则跳过
-        };
+        
+        let after_db = line.split("db ").nth(1).unwrap_or("");
 
         // 按逗号分割
         for item in after_db.split(',') {
@@ -40,12 +37,12 @@ fn main() {
         }
 
     }
-    result.extend(vec![0; 1280 * 1024 * 4 - result.len()]);
+    // result.extend(vec![0; 1280 * 1024 * 4 - result.len()]);
 
     // 将数据格式化为 Rust 代码
     let content = format!(
         "pub static GENERATED_DATA: &'static [u8; 1280 * 1024 * 4] = &{:?};\n",
-        &result[..1280 * 1024 * 4]
+        result
     );
 
     // 写入文件
