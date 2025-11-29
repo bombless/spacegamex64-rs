@@ -20,6 +20,8 @@ use uefi::proto::console::gop::GraphicsOutput;
 use uefi::println;
 use uefi::boot::OpenProtocolAttributes;
 use uefi::boot::OpenProtocolParams;
+use uefi::proto::console::gop::BltOp;
+use uefi::proto::console::gop::BltRegion;
 use core::time::Duration;
 
 #[entry]
@@ -68,6 +70,14 @@ fn main() -> Status {
     unsafe {
         core::ptr::copy_nonoverlapping(BACKGROUND as *const u8, gop.frame_buffer().as_mut_ptr(), BACKGROUND.len());
     }
+
+    gop.blt(BltOp::BufferToVideo {
+                    buffer: unsafe { core::mem::transmute(&SHIP1[..]) },
+                    src: BltRegion::Full,
+                    dest: (534, 477),
+                    dims: (230, 140),
+                })
+                .unwrap();
 
 
     boot::stall(Duration::from_secs(100));
