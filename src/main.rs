@@ -50,6 +50,21 @@ fn main() -> Status {
         return Status::ABORTED;
     };
 
+     let target_mode = gop.modes()
+        .find(|mode| {
+            let info = mode.info();
+            let (w, h) = info.resolution();
+            w == 1280 && h > 800
+        })
+        .expect("No suitable graphics mode found");
+
+    println!("Setting mode: {}x{}", target_mode.info().resolution().0, target_mode.info().resolution().1);
+
+    boot::stall(Duration::from_secs(2));
+    
+    gop.set_mode(&target_mode)
+        .expect("Failed to set graphics mode");
+
     unsafe {
         core::ptr::copy_nonoverlapping(GENERATED_DATA as *const u8, gop.frame_buffer().as_mut_ptr(), GENERATED_DATA.len());
     }
