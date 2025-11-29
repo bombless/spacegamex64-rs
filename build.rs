@@ -2,13 +2,8 @@ use std::env;
 use std::fs;
 use std::path::Path;
 
-fn main() {
-    // 输出目录，用于存放生成的文件
-    let out_dir = env::var("OUT_DIR").unwrap();
-    let dest_path = Path::new(&out_dir).join("generated_data.rs");
-
-    
-    let content = fs::read_to_string("graphics/loadImg.inc").unwrap();
+fn load_file(path: &str) -> Vec<u8> {
+    let content = fs::read_to_string(path).unwrap();
     let mut result = Vec::new();
 
     for line in content.lines() {
@@ -37,12 +32,29 @@ fn main() {
         }
 
     }
-    // result.extend(vec![0; 1280 * 1024 * 4 - result.len()]);
+
+    result
+}
+
+fn main() {
+    // 输出目录，用于存放生成的文件
+    let out_dir = env::var("OUT_DIR").unwrap();
+    let dest_path = Path::new(&out_dir).join("generated_data.rs");
+
+    
+    
+    let background = load_file("graphics/loadImg.inc");
+    let ship = load_file("graphics/loadImgShip.inc");
 
     // 将数据格式化为 Rust 代码
-    let content = format!(
-        "pub static GENERATED_DATA: &'static [u8; 1280 * 1024 * 4] = &{:?};\n",
-        result
+    let content = format!("
+        pub static BACKGROUND: &'static [u8; 1280 * 1024 * 4] = &{:?};\n
+        pub static SHIP1: &'static [u8; 230 * 140 * 4] = &{:?};\n
+        pub static SHIP2: &'static [u8; 230 * 140 * 4] = &{:?};\n
+        ",
+        background,
+        &ship[..230 * 140 * 4],
+        &ship[230 * 140 * 4..]
     );
 
     // 写入文件

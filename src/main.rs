@@ -66,7 +66,7 @@ fn main() -> Status {
         .expect("Failed to set graphics mode");
 
     unsafe {
-        core::ptr::copy_nonoverlapping(GENERATED_DATA as *const u8, gop.frame_buffer().as_mut_ptr(), GENERATED_DATA.len());
+        core::ptr::copy_nonoverlapping(BACKGROUND as *const u8, gop.frame_buffer().as_mut_ptr(), BACKGROUND.len());
     }
 
 
